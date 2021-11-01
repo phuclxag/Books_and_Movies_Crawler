@@ -10,17 +10,13 @@ from scrapy import Spider
 class MySpider(Spider):
     name = 'book'
     allowed_domains = ['https://www.goodreads.com']
-    def __init__(self, url):
-        start_urls = url
+    start_urls = list(data['link'])
 
     def parse(self, response):
-        table = response.xpath('//*[@id="all_votes"]')
-        rows = table.xpath('//tr')
-        for row in rows:
-            yield{
-            'name' : row.xpath('td[3]/a/span//text()').extract(),  
-            'link' : row.xpath('td[3]/a//@href').extract()
-            }
+        table = response.xpath('/html/body/div[2]/div[3]/div[1]/div[2]')
+        yield{
+        'title' : table.xpath('div[2]/div[1]/div[2]/h1//text()').extract(),  
+        }
 
 process = CrawlerProcess(settings={
     "FEEDS": {
