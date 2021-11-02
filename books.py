@@ -3,8 +3,8 @@ from scrapy.crawler import CrawlerProcess
 from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
 url = []
-for i in range(1,17):
-    a = 'https://www.goodreads.com/list/show/429.The_BOOK_was_BETTER_than_the_MOVIE?page={}'.format(i)
+for i in range(1,3):
+    a = 'https://www.goodreads.com/list/show/7.Best_Books_of_the_21st_Century?page={}'.format(i)
     url.append(a)
 class MySpider(Spider):
     name = 'book'
