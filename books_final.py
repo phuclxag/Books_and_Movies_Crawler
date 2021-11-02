@@ -2,7 +2,7 @@ import pandas as pd
 data = pd.read_csv('output.csv')
 
 for i in range(len(data['link'])):
-    link = "https://goodreads.com" + data['link'][i]
+    link = "https://www.goodreads.com" + data['link'][i]
     data['link'][i] = link
 
 from scrapy.crawler import CrawlerProcess
@@ -13,9 +13,18 @@ class MySpider(Spider):
     start_urls = list(data['link'])
 
     def parse(self, response):
-        table = response.xpath('/html/body/div[2]/div[3]/div[1]/div[2]')
+        table = response.xpath('/html/body/div[2]/div[3]')
+        link = response.request.url
         yield{
-        'title' : table.xpath('div[2]/div[1]/div[2]/h1//text()').extract(),  
+        'title' : (data[data['link'] == link])['name'].values[0],  
+        'author': table.xpath('//*[@id="bookAuthors"]/span[2]/div/a/span//text()').extract(),
+        'book_link': response.request.url,
+        'genre' : table.xpath('//*[@class="elementList "]/div/a/text()').extract(),
+        'date_published' : table.xpath('//*[@id="details"]/div[2]/nobr/text()').extract(),
+        'num_of_page' : table.xpath('//span[@itemprop="numberOfPages"]/text()').extract(),
+        'lang' : table.xpath('//*[@itemprop="inLanguage"]/text()').extract(),
+        'rating_count' : table.xpath('//*[@id="reviewControls"]/div[3]/text()').extract(),
+        'rate' : table.xpath('//*[@itemprop="ratingValue"]/text()').extract()
         }
 
 process = CrawlerProcess(settings={
@@ -25,4 +34,3 @@ process = CrawlerProcess(settings={
 })
 process.crawl(MySpider)
 process.start()
-
