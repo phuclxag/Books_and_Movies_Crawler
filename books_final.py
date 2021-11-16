@@ -6,11 +6,12 @@ for i in range(len(data['link'])):
     data['link'][i] = link
 
 from scrapy.crawler import CrawlerProcess
+from twisted.internet import reactor
 from scrapy import Spider
 class MySpider(Spider):
     name = 'book'
     allowed_domains = ['https://www.goodreads.com']
-    start_urls = list(data['link'])[0:10]
+    start_urls = list(data['link'])
 
     def parse(self, response):
         table = response.xpath('/html/body/div[2]/div[3]')
@@ -26,7 +27,7 @@ class MySpider(Spider):
         'lang' : table.xpath('//*[@itemprop="inLanguage"]/text()').extract(),
         'rating_count' : table.xpath('//*[@id="reviewControls"]/div[3]/text()').extract(),
         'rate' : table.xpath('//*[@itemprop="ratingValue"]/text()').extract(),
-        'award' : table.xpath('//*[@itemprop="awards"]/a/text()').extract(),
+        'award' : table.xpath('//*[@itemprop="awards"]/a/text()').extract()
         }
 
 process = CrawlerProcess(settings={
@@ -34,5 +35,6 @@ process = CrawlerProcess(settings={
         "test.csv": {"format": "csv"},
     },
 })
+
 process.crawl(MySpider)
 process.start()
